@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "651385218612",
+    "project_id": "matatuguide2",
+    "storage_bucket": "matatuguide2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651385218612:android:3e5b1183f707add107cc61",
+        "android_client_info": {
+          "package_name": "com.joyline.matatuguide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBktjIJXufFgkM4wnP5CrN42wteuDLcH1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
