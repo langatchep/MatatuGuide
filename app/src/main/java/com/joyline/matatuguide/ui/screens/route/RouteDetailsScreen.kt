@@ -1,15 +1,20 @@
 package com.joyline.matatuguide.ui.screens.details
 
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.joyline.matatuguide.data.RouteStorage
+import com.joyline.matatuguide.navigation.Routes
 import kotlinx.coroutines.launch
-import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun RouteDetailsScreen(
@@ -37,18 +42,30 @@ fun RouteDetailsScreen(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text("Stages: $stages", color = Color.Gray)
+        Text(
+            text = "Stages: $stages",
+            color = Color.Gray
+        )
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        Text("Fare: $fare", color = Color(0xFF3B82F6))
+        Text(
+            text = "Fare: $fare",
+            color = Color(0xFF3B82F6)
+        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // 🗺️ VIEW ON MAP BUTTON
+        // 🗺️ VIEW ON MAP
         Button(
             onClick = {
-                navController.navigate("map/$start/$end")
+
+                navController.navigate(
+                    Routes.maps(
+                        Uri.encode(start),
+                        Uri.encode(end)
+                    )
+                )
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF3B82F6)
@@ -60,14 +77,27 @@ fun RouteDetailsScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 💾 SAVE BUTTON
+        // 💾 SAVE ROUTE
         Button(
             onClick = {
+
                 scope.launch {
+
                     RouteStorage.saveRoute(
                         context,
-                        listOf(start, end, stages, fare).joinToString("|")
+                        listOf(
+                            start,
+                            end,
+                            stages,
+                            fare
+                        ).joinToString("|")
                     )
+
+                    Toast.makeText(
+                        context,
+                        "Route Saved!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             colors = ButtonDefaults.buttonColors(
@@ -78,4 +108,17 @@ fun RouteDetailsScreen(
             Text("Save Route")
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RouteDetailsPreview() {
+
+    RouteDetailsScreen(
+        navController = rememberNavController(),
+        start = "Nairobi",
+        end = "Athi River",
+        stages = "6",
+        fare = "100"
+    )
 }

@@ -1,17 +1,21 @@
 package com.joyline.matatuguide.ui.screens.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.joyline.matatuguide.navigation.ROUT_HOME
-import com.joyline.matatuguide.navigation.ROUT_REGISTER
+import com.joyline.matatuguide.navigation.Routes
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
@@ -23,29 +27,43 @@ fun LoginScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color(0xFFF8FAFC))
             .padding(20.dp)
     ) {
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // 🔵 HEADER
         Text(
             text = "Welcome Back 👋",
-            style = MaterialTheme.typography.headlineMedium,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
             color = Color(0xFF1E3A8A)
         )
 
+        Spacer(modifier = Modifier.height(6.dp))
+
         Text(
-            text = "Login to continue",
-            color = Color.Gray
+            text = "Login to continue using MatatuGuide",
+            color = Color.Gray,
+            fontSize = 15.sp
         )
 
-        Spacer(modifier = Modifier.height(25.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
-        // INPUT CARD
+        // 📦 LOGIN CARD
         Card(
-            elevation = CardDefaults.cardElevation(6.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+
+            Column(
+                modifier = Modifier.padding(18.dp)
+            ) {
 
                 OutlinedTextField(
                     value = email,
@@ -54,10 +72,11 @@ fun LoginScreen(navController: NavHostController) {
                         error = ""
                     },
                     label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
                 OutlinedTextField(
                     value = password,
@@ -67,58 +86,91 @@ fun LoginScreen(navController: NavHostController) {
                     },
                     label = { Text("Password") },
                     visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp)
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(15.dp))
 
+        // ❌ ERROR MESSAGE
         if (error.isNotEmpty()) {
+
             Text(
                 text = error,
                 color = Color.Red
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
+        // 🔐 LOGIN BUTTON
+        Button(
+            onClick = {
+
+                if (email.isBlank() || password.isBlank()) {
+
+                    error = "Fill all fields"
+
+                } else {
+
+                    navController.navigate(Routes.HOME) {
+
+                        popUpTo(Routes.LOGIN) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            },
+
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+
+            shape = RoundedCornerShape(16.dp),
+
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF1E3A8A)
+            )
+        ) {
+
+            Text(
+                text = "Login",
+                color = Color.White,
+                fontSize = 16.sp
             )
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // LOGIN BUTTON
-        Button(
-            onClick = {
-                if (email.isBlank() || password.isBlank()) {
-                    error = "Please enter email and password"
-                } else {
-                    navController.navigate(ROUT_HOME) {
-                        popUpTo(navController.graph.startDestinationId)
-                    }
-                }
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1E3A8A)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-        ) {
-            Text("Login")
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // GO TO REGISTER
+        // 📝 REGISTER
         TextButton(
             onClick = {
-                navController.navigate(ROUT_REGISTER)
-            }
+
+                navController.navigate(Routes.REGISTER) {
+                    launchSingleTop = true
+                }
+            },
+
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text("Don't have an account? Register")
+
+            Text(
+                text = "No account? Register",
+                color = Color(0xFF1E3A8A)
+            )
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController())
+fun LoginPreview() {
+
+    LoginScreen(
+        navController = rememberNavController()
+    )
 }

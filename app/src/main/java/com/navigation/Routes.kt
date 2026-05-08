@@ -1,34 +1,25 @@
 package com.joyline.matatuguide.navigation
 
-import android.net.Uri
+object Routes {
 
+    const val SPLASH = "splash"
+    const val HOME = "home"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+    const val SAVED = "saved"
 
-const val ROUT_SPLASH = "splash"
-const val ROUT_HOME = "home"
-const val ROUT_LOGIN = "login"
-const val ROUT_REGISTER = "register"
-const val ROUT_SAVED = "saved"
+    const val RESULTS = "results/{from}/{to}"
+    const val DETAILS = "details/{start}/{end}/{stages}/{fare}"
+    const val MAPS = "maps/{start}/{end}"
 
+    // ---- helpers (SAFE NAVIGATION BUILDERS) ----
 
-const val ROUT_RESULTS = "results/{from}/{to}"
-const val ROUT_DETAILS = "details/{start}/{end}/{stages}/{fare}"
-const val ROUT_MAPS = "map/{start}/{end}"
+    fun results(from: String, to: String) =
+        "results/$from/$to"
 
+    fun details(start: String, end: String, stages: String, fare: String) =
+        "details/$start/$end/$stages/$fare"
 
-
-fun resultsRoute(from: String, to: String): String {
-    return "results/${Uri.encode(from)}/${Uri.encode(to)}"
-}
-
-fun detailsRoute(
-    start: String,
-    end: String,
-    stages: String,
-    fare: String
-): String {
-    return "details/${Uri.encode(start)}/${Uri.encode(end)}/${Uri.encode(stages)}/${Uri.encode(fare)}"
-}
-
-fun mapRoute(start: String, end: String): String {
-    return "map/${Uri.encode(start)}/${Uri.encode(end)}"
+    fun maps(start: String, end: String) =
+        "maps/$start/$end"
 }
