@@ -22,16 +22,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.joyline.matatuguide.navigation.Routes
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavHostController) {
+    // Firebase instances should ideally be managed in a ViewModel,
+    // but here we get the data to pass to a stateless content composable.
     val auth = FirebaseAuth.getInstance()
     val currentUser = auth.currentUser
 
+    ProfileContent(
+        userName = currentUser?.displayName ?: "User Name",
+        userEmail = currentUser?.email ?: "user@example.com",
+        onLogoutClick = {
+            auth.signOut()
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileContent(
+    userName: String,
+    userEmail: String,
+    onLogoutClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,13 +85,13 @@ fun ProfileScreen(navController: NavHostController) {
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = currentUser?.displayName ?: "User Name",
+                    text = userName,
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = currentUser?.email ?: "user@example.com",
+                    text = userEmail,
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp
                 )
@@ -90,12 +109,7 @@ fun ProfileScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Button(
-                onClick = {
-                    auth.signOut()
-                    navController.navigate(Routes.LOGIN) {
-                        popUpTo(0)
-                    }
-                },
+                onClick = onLogoutClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp),
@@ -136,5 +150,11 @@ fun ProfileOption(icon: ImageVector, title: String) {
 @Preview(showBackground = true)
 @Composable
 fun ProfilePreview() {
-    ProfileScreen(rememberNavController())
+    // Use the stateless content composable for the preview
+    // to avoid Firebase initialization issues.
+    ProfileContent(
+        userName = "Joy Line",
+        userEmail = "joyline@example.com",
+        onLogoutClick = {}
+    )
 }

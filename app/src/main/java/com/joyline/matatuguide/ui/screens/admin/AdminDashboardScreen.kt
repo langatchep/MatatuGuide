@@ -16,10 +16,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.firestore.FirebaseFirestore
 import com.joyline.matatuguide.model.User
+import com.joyline.matatuguide.ui.theme.MatatuGuideTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminDashboardScreen() {
     val db = FirebaseFirestore.getInstance()
@@ -41,6 +42,28 @@ fun AdminDashboardScreen() {
             }
     }
 
+    AdminDashboardContent(
+        users = users,
+        isLoading = isLoading,
+        onDeleteUser = { user ->
+            db.collection("users").document(user.uid).delete()
+                .addOnSuccessListener {
+                    Toast.makeText(context, "User deleted from record", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Failed to delete: ${it.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdminDashboardContent(
+    users: List<User>,
+    isLoading: Boolean,
+    onDeleteUser: (User) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,15 +100,7 @@ fun AdminDashboardScreen() {
                 items(users) { user ->
                     UserCard(
                         user = user,
-                        onDelete = {
-                            db.collection("users").document(user.uid).delete()
-                                .addOnSuccessListener {
-                                    Toast.makeText(context, "User deleted from record", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener {
-                                    Toast.makeText(context, "Failed to delete: ${it.message}", Toast.LENGTH_SHORT).show()
-                                }
-                        }
+                        onDelete = { onDeleteUser(user) }
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                 }
@@ -131,5 +146,37 @@ fun UserCard(user: User, onDelete: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AdminDashboardPreview() {
+    MatatuGuideTheme {
+        AdminDashboardContent(
+            users = listOf(
+                User(uid = "1", name = "Reuben Langat", email = "reubenkipkirui@gmail.com", role = "admin"),
+                User(uid = "2", name = "Joyline Cheprincess", email = "joyline@gmail.com", role = "user"),
+                User(uid = "3", name = "Myles Kerika", email = "mylookerika@gmail.com", role = "user")
+            ),
+            isLoading = false,
+            onDeleteUser = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserCardPreview() {
+    MatatuGuideTheme {
+        UserCard(
+            user = User(
+                uid = "1",
+                name = "Reuben Langat",
+                email = "kipkiruireuben@gmail.com",
+                role = "user"
+            ),
+            onDelete = {}
+        )
     }
 }

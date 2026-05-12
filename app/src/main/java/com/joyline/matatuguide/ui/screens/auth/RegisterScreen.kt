@@ -37,6 +37,68 @@ fun RegisterScreen(navController: NavHostController) {
     var error by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+    RegisterContent(
+        name = name,
+        onNameChange = { name = it; error = "" },
+        email = email,
+        onEmailChange = { email = it; error = "" },
+        password = password,
+        onPasswordChange = { password = it; error = "" },
+        confirm = confirm,
+        onConfirmChange = { confirm = it; error = "" },
+        error = error,
+        isLoading = isLoading,
+        onRegisterClick = {
+            if (name.isBlank() || email.isBlank() || password.isBlank() || confirm.isBlank()) {
+                error = "Fill all fields"
+            } else if (password != confirm) {
+                error = "Passwords do not match"
+            } else {
+                isLoading = true
+                auth.createUserWithEmailAndPassword(email, password)
+                    .addOnSuccessListener { result ->
+                        val uid = result.user?.uid ?: ""
+                        val user = User(uid = uid, name = name, email = email)
+
+                        db.collection("users").document(uid).set(user)
+                            .addOnSuccessListener {
+                                isLoading = false
+                                navController.navigate(Routes.HOME) {
+                                    popUpTo(Routes.REGISTER) { inclusive = true }
+                                }
+                            }
+                            .addOnFailureListener {
+                                isLoading = false
+                                error = it.message ?: "Failed to save user info"
+                            }
+                    }
+                    .addOnFailureListener {
+                        isLoading = false
+                        error = it.message ?: "Registration failed"
+                    }
+            }
+        },
+        onLoginClick = {
+            navController.navigate(Routes.LOGIN) { launchSingleTop = true }
+        }
+    )
+}
+
+@Composable
+fun RegisterContent(
+    name: String,
+    onNameChange: (String) -> Unit,
+    email: String,
+    onEmailChange: (String) -> Unit,
+    password: String,
+    onPasswordChange: (String) -> Unit,
+    confirm: String,
+    onConfirmChange: (String) -> Unit,
+    error: String,
+    isLoading: Boolean,
+    onRegisterClick: () -> Unit,
+    onLoginClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,7 +134,7 @@ fun RegisterScreen(navController: NavHostController) {
             Column(modifier = Modifier.padding(18.dp)) {
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it; error = "" },
+                    onValueChange = onNameChange,
                     label = { Text("Full Name") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -81,7 +143,7 @@ fun RegisterScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(14.dp))
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it; error = "" },
+                    onValueChange = onEmailChange,
                     label = { Text("Email") },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -90,7 +152,7 @@ fun RegisterScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(14.dp))
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it; error = "" },
+                    onValueChange = onPasswordChange,
                     label = { Text("Password") },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
@@ -100,7 +162,7 @@ fun RegisterScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(14.dp))
                 OutlinedTextField(
                     value = confirm,
-                    onValueChange = { confirm = it; error = "" },
+                    onValueChange = onConfirmChange,
                     label = { Text("Confirm Password") },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth(),
@@ -118,39 +180,7 @@ fun RegisterScreen(navController: NavHostController) {
         }
 
         Button(
-            onClick = {
-                if (name.isBlank() || email.isBlank() || password.isBlank() || confirm.isBlank()) {
-                    error = "Fill all fields"
-                    return@Button
-                }
-                if (password != confirm) {
-                    error = "Passwords do not match"
-                    return@Button
-                }
-
-                isLoading = true
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener { result ->
-                        val uid = result.user?.uid ?: ""
-                        val user = User(uid = uid, name = name, email = email)
-
-                        db.collection("users").document(uid).set(user)
-                            .addOnSuccessListener {
-                                isLoading = false
-                                navController.navigate(Routes.HOME) {
-                                    popUpTo(Routes.REGISTER) { inclusive = true }
-                                }
-                            }
-                            .addOnFailureListener {
-                                isLoading = false
-                                error = it.message ?: "Failed to save user info"
-                            }
-                    }
-                    .addOnFailureListener {
-                        isLoading = false
-                        error = it.message ?: "Registration failed"
-                    }
-            },
+            onClick = onRegisterClick,
             modifier = Modifier.fillMaxWidth().height(55.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E3A8A)),
@@ -166,7 +196,7 @@ fun RegisterScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(10.dp))
 
         TextButton(
-            onClick = { navController.navigate(Routes.LOGIN) { launchSingleTop = true } },
+            onClick = onLoginClick,
             modifier = Modifier.align(Alignment.CenterHorizontally),
             enabled = !isLoading
         ) {
@@ -178,5 +208,18 @@ fun RegisterScreen(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun RegisterPreview() {
-    RegisterScreen(navController = rememberNavController())
+    RegisterContent(
+        name = "",
+        onNameChange = {},
+        email = "",
+        onEmailChange = {},
+        password = "",
+        onPasswordChange = {},
+        confirm = "",
+        onConfirmChange = {},
+        error = "",
+        isLoading = false,
+        onRegisterClick = {},
+        onLoginClick = {}
+    )
 }
