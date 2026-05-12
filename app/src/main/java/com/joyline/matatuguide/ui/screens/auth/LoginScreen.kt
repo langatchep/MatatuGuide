@@ -3,10 +3,14 @@ package com.joyline.matatuguide.ui.screens.auth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -19,149 +23,81 @@ import com.joyline.matatuguide.navigation.Routes
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8FAFC))
-            .padding(20.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF1E3A8A), Color(0xFF3B82F6))
+                )
+            )
     ) {
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // 🔵 HEADER
-        Text(
-            text = "Welcome Back 👋",
-            fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1E3A8A)
-        )
-
-        Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = "Login to continue using MatatuGuide",
-            color = Color.Gray,
-            fontSize = 15.sp
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        // 📦 LOGIN CARD
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(30.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-
-            Column(
-                modifier = Modifier.padding(18.dp)
-            ) {
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = {
-                        email = it
-                        error = ""
-                    },
-                    label = { Text("Email") },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp)
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        error = ""
-                    },
-                    label = { Text("Password") },
-                    visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(15.dp))
-
-        // ❌ ERROR MESSAGE
-        if (error.isNotEmpty()) {
-
             Text(
-                text = error,
-                color = Color.Red
+                text = "Welcome Back",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "Sign in to continue",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.8f)
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
-        }
+            Spacer(modifier = Modifier.height(40.dp))
 
-        // 🔐 LOGIN BUTTON
-        Button(
-            onClick = {
-
-                if (email.isBlank() || password.isBlank()) {
-
-                    error = "Fill all fields"
-
-                } else {
-
-                    navController.navigate(Routes.HOME) {
-
-                        popUpTo(Routes.LOGIN) {
-                            inclusive = true
-                        }
-
-                        launchSingleTop = true
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(10.dp)
+            ) {
+                Column(modifier = Modifier.padding(24.dp)) {
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email Address") },
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF3B82F6)) },
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                        leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color(0xFF3B82F6)) },
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Button(
+                        onClick = { navController.navigate(Routes.HOME) },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E3A8A))
+                    ) {
+                        Text("Sign In", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     }
                 }
-            },
+            }
 
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
+            Spacer(modifier = Modifier.height(20.dp))
 
-            shape = RoundedCornerShape(16.dp),
-
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF1E3A8A)
-            )
-        ) {
-
-            Text(
-                text = "Login",
-                color = Color.White,
-                fontSize = 16.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        // 📝 REGISTER
-        TextButton(
-            onClick = {
-
-                navController.navigate(Routes.REGISTER) {
-                    launchSingleTop = true
-                }
-            },
-
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-
-            Text(
-                text = "No account? Register",
-                color = Color(0xFF1E3A8A)
-            )
+            TextButton(onClick = { navController.navigate(Routes.REGISTER) }) {
+                Text("Don't have an account? Create one", color = Color.White)
+            }
         }
     }
 }
@@ -169,8 +105,5 @@ fun LoginScreen(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-
-    LoginScreen(
-        navController = rememberNavController()
-    )
+    LoginScreen(rememberNavController())
 }

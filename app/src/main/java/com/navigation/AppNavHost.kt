@@ -15,8 +15,12 @@ import com.joyline.matatuguide.ui.screens.details.RouteDetailsScreen
 import com.joyline.matatuguide.ui.screens.results.ResultsScreen
 
 import com.joyline.matatuguide.ui.screens.splash.SplashScreen
+import com.joyline.matatuguide.ui.screens.onboarding.OnboardingScreen
 import com.joyline.matatuguide.ui.screens.maps.MapScreen
 import com.joyline.matatuguide.ui.screens.saved.SavedRoutesScreen
+import com.joyline.matatuguide.ui.screens.analytics.AnalyticsScreen
+import com.joyline.matatuguide.ui.screens.admin.AdminDashboardScreen
+import com.joyline.matatuguide.ui.screens.profile.ProfileScreen
 
 @Composable
 fun AppNavHost(
@@ -33,6 +37,11 @@ fun AppNavHost(
         // 🔵 SPLASH
         composable(Routes.SPLASH) {
             SplashScreen(navController)
+        }
+
+        // 🚀 ONBOARDING
+        composable(Routes.ONBOARDING) {
+            OnboardingScreen(navController)
         }
 
         // 🏠 HOME
@@ -53,6 +62,21 @@ fun AppNavHost(
         // 💾 SAVED
         composable(Routes.SAVED) {
             SavedRoutesScreen()
+        }
+
+        // 📊 ANALYTICS
+        composable(Routes.ANALYTICS) {
+            AnalyticsScreen()
+        }
+
+        // 👮 ADMIN
+        composable(Routes.ADMIN_DASHBOARD) {
+            AdminDashboardScreen()
+        }
+
+        // 👤 PROFILE
+        composable(Routes.PROFILE) {
+            ProfileScreen(navController)
         }
 
         // 📍 RESULTS
